@@ -1,3 +1,6 @@
+# nodeバージョン指定
+fnm env --use-on-cd | Out-String | Invoke-Expression | fnm use v12.22.11
+
 # Screeps Arena Typescript Starter
 
 ## This repo is a WIP starter template for the current Closed Alpha of [Screeps Arena](https://store.steampowered.com/app/1137320/Screeps_Arena/)
