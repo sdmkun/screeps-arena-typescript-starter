@@ -33,7 +33,7 @@ import { BodyPart, Flag } from "arena";
 import { Creep, GameObject, StructureTower } from "game/prototypes";
 import { getDirection, getObjectsByPrototype, getRange, getTicks } from "game/utils";
 import { searchPath } from "game/path-finder";
-import { GameManager, CreepManager } from "../utils/Singleton";
+import GameManager from "../utils/GameManager";
 
 // We can define global objects that will be valid for the entire match.
 // The game guarantees there will be no global reset during the match.
@@ -42,7 +42,6 @@ import { GameManager, CreepManager } from "../utils/Singleton";
 // let enemyCreeps: Creep[];
 // let myTower: StructureTower[];
 let enemyFlag: Flag | undefined;
-let gameManager = new GameManager();
 
 // This is the only exported function from the main module. It is called every tick.
 export function loop(): void {
@@ -51,19 +50,18 @@ export function loop(): void {
   // There is no Game.creeps or Game.structures, you can manage game objects in your own way.
 
   // allCreeps = CreepManager.getCreeps().all;
-  gameManager.reload();
 
   // myCreeps = CreepManager.getCreeps().my;
   // enemyCreeps = CreepManager.getCreeps().enemy;
   // myCreeps = getObjectsByPrototype(Creep).filter(i => i.my);
   // enemyCreeps = getObjectsByPrototype(Creep).filter(i => !i.my);
   // enemyFlag = getObjectsByPrototype(Flag).find(i => !i.my);
-  enemyFlag = gameManager.flags.enemy[0];
+  enemyFlag = GameManager.flags.enemy[0];
 
   // Run all my creeps according to their bodies
-  const myCreeps = gameManager.creeps.my;
+  const myCreeps = GameManager.creeps.my;
 
-  // console.log(gameManager);
+  // console.log(GameManager);
 
   myCreeps.forEach(creep => {
     if (creep.role == null) {
@@ -72,7 +70,7 @@ export function loop(): void {
     creep.act?.();
   });
 
-  const myTower = gameManager.towers.my;
+  const myTower = GameManager.towers.my;
   myTower.forEach(t => tower(t));
 }
 
@@ -107,7 +105,7 @@ function meleeAttacker(creep: Creep) {
     creep.initialPos = { x: creep.x, y: creep.y };
   }
 
-  const targets = gameManager.creeps.enemy
+  const targets = GameManager.creeps.enemy
     // .filter(i => getRange(i, creep.initialPos) < 10)
     .sort((a, b) => getRange(a, creep) - getRange(b, creep));
 
@@ -120,7 +118,7 @@ function meleeAttacker(creep: Creep) {
 }
 
 function rangedAttacker(creep: Creep) {
-  const enemyCreeps = gameManager.creeps.enemy;
+  const enemyCreeps = GameManager.creeps.enemy;
   const targets = enemyCreeps.sort((a, b) => getRange(a, creep) - getRange(b, creep));
 
   if (targets.length > 0) {
@@ -139,7 +137,7 @@ function rangedAttacker(creep: Creep) {
 }
 
 function healer(creep: Creep) {
-  const myCreeps = gameManager.creeps.my;
+  const myCreeps = GameManager.creeps.my;
   const targets = myCreeps.filter(i => i !== creep && i.hits < i.hitsMax).sort((a, b) => a.hits - b.hits);
 
   if (targets.length) {
@@ -161,7 +159,7 @@ function healer(creep: Creep) {
   }
 
   const range = 7;
-  const enemyCreeps = gameManager.creeps.enemy;
+  const enemyCreeps = GameManager.creeps.enemy;
   const enemiesInRange = enemyCreeps.filter(i => getRange(i, creep) < range);
   if (enemiesInRange.length > 0) {
     flee(creep, enemiesInRange, range);
@@ -185,7 +183,7 @@ function flee(creep: Creep, targets: GameObject[], range: number) {
 }
 
 function tower(tower: StructureTower) {
-  const enemyCreeps = gameManager.creeps.enemy;
+  const enemyCreeps = GameManager.creeps.enemy;
   const attackRange = 10;
   const attackTargets = enemyCreeps.filter(c => getRange(c, tower) < attackRange).sort((a, b) => a.hits - b.hits);
 
