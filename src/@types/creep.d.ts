@@ -5,3 +5,5 @@ declare module "game/prototypes" {
     act: (() => void) | null | undefined;
   }
 }
+
+export {};

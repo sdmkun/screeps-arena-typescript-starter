@@ -17,7 +17,7 @@ const getGameObjectsInternal = <T>(prototype: _Constructor<T>): Group<T> => {
   const my: T[] = [];
   const enemy: T[] = [];
 
-  if ("my" in prototype.prototype) {
+  if ("my" in (prototype.prototype as unknown as Ownable<T>)) {
     (all as Ownable<T>[]).reduce(
       (acc, cur) => {
         acc[cur.my ? "my" : "enemy"].push(cur);

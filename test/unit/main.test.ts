@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { loop } from "../../src/main";
+import { loop } from "../../src/arena_alpha_spawn_and_swamp/main";
 import { Game, Memory } from "./mock";
 
 describe("main", () => {
